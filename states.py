@@ -16,7 +16,7 @@ class HodimState(StatesGroup):
     ha_yoq = State()
 
 
-class IshJoyiState():
+class IshJoyiState(StatesGroup):
     Ism_Fam = State()
     Yosh = State()
     texnologiya = State()
@@ -24,6 +24,5 @@ class IshJoyiState():
     hudud = State()
     narx = State()
     kasbi = State()
-    murojaat_vaqti = State()
     maqsad = State()    
     ha_yoq = State()

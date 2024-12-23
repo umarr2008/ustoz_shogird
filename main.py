@@ -142,7 +142,7 @@ async def ha_yoq_state(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(lambda message: message.text == "Ish joyi kerak")
-async def hodim_kerak(message: types.Message):
+async def ishjoyi_kerak(message: types.Message):
     text = """Ish joyi topish uchun ariza berishingiz mumkin
 
 Hozir sizga birnecha savollar beriladi, har biriga javob bering. 
@@ -154,7 +154,7 @@ Oxirida agar hammasi to`g`ri bo`lsa, HA tugmasini bosing va arizangiz Adminga yu
 
 @dp.message_handler(state=IshJoyiState.Ism_Fam)
 async def idora_state(message: types.Message, state: FSMContext):
-    await state.update_data(Ism_Famc=message.text)
+    await state.update_data(Ism_Fam=message.text)
     text = '''🕑 Yosh: 
 
 Yoshingizni kiriting?
@@ -185,60 +185,42 @@ async def hudud_state(message: types.Message, state: FSMContext):
     await IshJoyiState.next()
 
 
-@dp.message_handler(state=IshJoyiState.Ism_Fam)
-async def ism_familiya_state(message: types.Message, state: FSMContext):
-    await state.update_data(ism_familiya=message.text)
-    text = '''⏰ Murojaat vaqtingizni kiriting'''
-    await message.answer(text=text)
-    await IshJoyiState.next()
 
-
-@dp.message_handler(state=HodimState.murojaat_vaqti)
-async def murojaat_vaqti_state(message: types.Message, state: FSMContext):
-    await state.update_data(murojaat_vaqti=message.text)
-    text = '''🕒 Ish vaqtingizni kiriting'''
-    await message.answer(text=text)
-    await IshJoyiState.next()
-
-
-@dp.message_handler(state=IshJoyiState.ish_vaqti)
-async def ish_vaqti_state(message: types.Message, state: FSMContext):
-    await state.update_data(ish_vaqti=message.text)
-    text = '''💰 Maoshingizni kiriting'''
-    await message.answer(text=text)
-    await IshJoyiState.next()
-
-
-@dp.message_handler(state=IshJoyiState.maosh)
+@dp.message_handler(state=IshJoyiState.narx)
 async def maosh_state(message: types.Message, state: FSMContext):
-    await state.update_data(maosh=message.text)
-    text = '''📝 Qo'shimcha ma'lumotlar'''
+    await state.update_data(narx=message.text)
+    text = '''📝 Kasbingizni kiriting'''
     await message.answer(text=text)
     await IshJoyiState.next()
+    
+@dp.message_handler(state=IshJoyiState.kasbi)
+async def kasb_state(message: types.Message, state: FSMContext):
+    await state.update_data(kasbi=message.text)
+    text = '''✍️ Maqsadingizni kiriting'''
+    await message.answer(text=text)
+    await IshJoyiState.next()
+    
 
-
-@dp.message_handler(state=IshJoyiState.qoshimcha)
+@dp.message_handler(state=IshJoyiState.maqsad)
 async def qoshimcha_state(message: types.Message, state: FSMContext):
-    await state.update_data(qoshimcha=message.text)
+    await state.update_data(maqsad0=message.text)
     data = await state.get_data() # {}
     global result_text, result_dict
     result_dict = data
-    result_text = f"""Xodim kerak:
+    result_text = f"""IIsh joyi kerak:
 
-🏢 Idora: {data.get('idora')}
-📚 Texnologiya: {data.get('texnologiya')} 
-🇺🇿 Telegram: @{message.from_user.username if message.from_user.username else ''}
-📞 Aloqa: {data.get('telefon')}
-🌐 Hudud: {data.get('hudud')}
-✍️ Mas'ul: {data.get('ism_familiya')}
-🕰 Murojaat vaqti: {data.get('murojaat_vaqti')}
-🕰 Ish vaqti: {data.get('ish_vaqti')}
-💰 Maosh: {data.get('maosh')}
-‼️ Qo`shimcha: {data.get('qoshimcha')}
+👨‍💼 Xodim: {data.get("Ism_Fam")}
+🕑 Yosh: {data.get("Yosh")}
+📚 Texnologiya: {data.get("texnologiya")}  
+📞 Aloqa: {data.get("telefon")}
+🌐 Hudud: {data.get("hudud")} 
+💰 Narxi:  {data.get("narx")} 
+👨🏻‍💻 Kasbi: {data.get("kasbi")} 
+🔎 Maqsad: {data.get("maqsad")}  
 
-#ishJoyi #{data.get('hudud')} #{data.get('idora')}"""
+#xodim #{data.get('hudud')} #{data.get('idora')}"""
     await message.answer(text=result_text, reply_markup=tasdiqlash_kb)
-    await HodimState.ha_yoq.set()
+    await IshJoyiState.ha_yoq.set()
 
 
 @dp.message_handler(state=IshJoyiState.ha_yoq)
@@ -270,7 +252,7 @@ async def admin_confirm(message: types.Message, state: FSMContext):
         data = result_dict
         user_id = message.from_user.id
         username = message.from_user.username if message.from_user.username else ""
-        data = (user_id, username, data.get('idora'), data.get('texnologiya'), data.get('telefon'), data.get('hudud'), data.get('ism_familiya'), data.get('murojaat_vaqti'), data.get('ish_vaqti'), data.get('maosh'), data.get('qoshimcha'))
+        data = (user_id, username, data.get('Ism_Fam'), data.get('Yosh'), data.get('texnologiya'), data.get('telefon'), data.get('hudud'), data.get('narx'), data.get('kasbi'), data.get('maqsad'))
         insert_data(data)
 
     elif message.text == "❌👑 YO'Q":
